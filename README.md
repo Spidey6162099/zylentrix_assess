@@ -27,36 +27,27 @@ This project is a RESTful API for user management built with Spring Boot and Mon
 - Spring Data MongoDB
 - MongoDB Atlas (Cloud Database)
 - Maven
+- Lombok
 
 ## Project Setup
 
 ### Prerequisites
 
 - JDK 11 or higher
-- Maven
-- MongoDB Atlas account
+- Maven (for development only)
 
-### Installation
+### Running the Application
 
-1. Clone the repository:
+The application is ready to run with MongoDB Atlas credentials already configured in the application properties.
+
+1. You can directly run the pre-built JAR file available in the target directory:
    ```bash
-   git clone https://github.com/yourusername/zylentrix_assessment.git
-   cd zylentrix_assessment
+   java -jar target/zylentrix_assessment.jar
    ```
 
-2. Update the MongoDB connection string in `application.properties`:
-   ```properties
-   spring.data.mongodb.uri=mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
-   spring.data.mongodb.database=<database-name>
-   ```
-
-3. Build the project:
+2. Alternatively, if you want to build from source:
    ```bash
    mvn clean install
-   ```
-
-4. Run the application:
-   ```bash
    mvn spring-boot:run
    ```
 
@@ -79,14 +70,21 @@ The API includes custom exception handling for specific scenarios:
 
 ## Database Configuration
 
-This project uses MongoDB Atlas as the database. MongoDB Atlas is a fully-managed cloud database service that handles all the complexity of deploying, managing, and healing deployments on the cloud service provider of your choice.
+This project uses MongoDB Atlas as the database with credentials already configured in the application. There's no need to modify any database settings to run the application.
 
 ### User Schema
 
-The user entity is defined with the following fields:
-- `id`: String (auto-generated)
-- Other fields defined in the `UserInDB` class
-- DTO pattern implemented with `UserDto` for data transfer
+The user entity (`UserInDB`) is defined with the following fields:
+- `id`: String (auto-generated MongoDB ID)
+- `name`: String (user's full name)
+- `email`: String (user's email address)
+- `age`: int (user's age)
+
+The entity uses Lombok annotations (`@Getter`, `@Setter`, `@AllArgsConstructor`, `@NoArgsConstructor`) to reduce boilerplate code and is mapped to MongoDB using the `@Document` annotation.
+
+## Data Transfer Object
+
+The application uses a DTO pattern with `UserDto` for transferring user data between the client and the server, separating the internal data representation from the API contract.
 
 ## How to Use
 
@@ -99,7 +97,7 @@ curl -X POST \
   -d '{
     "name": "John Doe",
     "email": "john.doe@example.com",
-    "password": "securepassword"
+    "age": 30
   }'
 ```
 
@@ -107,4 +105,23 @@ curl -X POST \
 
 ```bash
 curl -X GET http://localhost:8080/users/{id}
+```
+
+### Example Request - Update User
+
+```bash
+curl -X PUT \
+  http://localhost:8080/users/{id} \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "John Doe Updated",
+    "email": "john.updated@example.com",
+    "age": 31
+  }'
+```
+
+### Example Request - Delete User
+
+```bash
+curl -X DELETE http://localhost:8080/users/{id}
 ```
